@@ -1,6 +1,16 @@
+var gameSettings = {
+  playerSpeed: 200,
+  maxPowerups: 2,
+  powerUpVel: 50,
+};
+
 class Scene2 extends Phaser.Scene {
   constructor() {
     super("playGame");
+  }
+
+  pickPowerUp(player, powerUp) {
+    powerUp.disableBody(true, true);
   }
 
   create() {
@@ -27,34 +37,10 @@ class Scene2 extends Phaser.Scene {
       "ship3"
     );
 
-    this.anims.create({
-      key: "ship1_anim",
-      frames: this.anims.generateFrameNumbers("ship"),
-      frameRate: 20,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: "ship2_anim",
-      frames: this.anims.generateFrameNumbers("ship2"),
-      frameRate: 20,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: "ship3_anim",
-      frames: this.anims.generateFrameNumbers("ship3"),
-      frameRate: 20,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: "explode",
-      frames: this.anims.generateFrameNumbers("explosion"),
-      frameRate: 20,
-      repeat: 0,
-      hideOnComplete: true,
-    });
+    this.enemies = this.physics.add.group();
+    this.enemies.add(this.ship1);
+    this.enemies.add(this.ship2);
+    this.enemies.add(this.ship3);
 
     this.ship1.play("ship1_anim");
     this.ship2.play("ship2_anim");
@@ -70,26 +56,7 @@ class Scene2 extends Phaser.Scene {
       font: "25px Arial",
       fill: "yellow",
     });
-
-    this.anims.create({
-      key: "red",
-      frames: this.anims.generateFrameNumbers("power-up", {
-        start: 0,
-        end: 1,
-      }),
-      frameRate: 20,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: "gray",
-      frames: this.anims.generateFrameNumbers("power-up", {
-        start: 2,
-        end: 3,
-      }),
-      frameRate: 20,
-      repeat: -1,
-    });
-
+    this.physics.world.setBoundsCollision();
     this.powerUps = this.physics.add.group();
 
     var maxObjects = 4;
@@ -107,6 +74,53 @@ class Scene2 extends Phaser.Scene {
       powerUp.setCollideWorldBounds(true);
       powerUp.setBounce(1);
     }
+
+    this.player = this.physics.add.sprite(
+      config.width / 2 - 8,
+      config.height - 64,
+      "player"
+    );
+    this.player.play("thrust");
+    this.cursorKeys = this.input.keyboard.createCursorKeys();
+    this.player.setCollideWorldBounds(true);
+
+    this.spacebar = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SPACE
+    );
+
+    this.projectiles = this.add.group();
+
+    this.physics.add.collider(
+      this.projectiles,
+      this.powerUps,
+      function (projectile, powerUp) {
+        projectile.destroy();
+      }
+    );
+
+    this.physics.add.overlap(
+      this.player,
+      this.powerUps,
+      this.pickPowerUp,
+      null,
+      this
+    );
+
+    this.physics.add.overlap(
+      this.player,
+      this.enemies,
+      this.hurtPlayer,
+      null,
+      this
+    );
+
+    this.physics.add.overlap(
+      this.projectiles,
+      this.enemies,
+      this.hitEnemy,
+      null,
+      this
+    );
   }
 
   moveShip(ship, speed) {
@@ -127,10 +141,57 @@ class Scene2 extends Phaser.Scene {
     gameObject.play("explode");
   }
 
+  pickPowerUp(player, powerUp) {
+    // make it inactive and hide it
+    powerUp.disableBody(true, true);
+  }
+
+  // 3.3 reset position of player and enemy when they crash each other
+  hurtPlayer(player, enemy) {
+    this.resetShipPos(enemy);
+    player.x = config.width / 2 - 8;
+    player.y = config.height - 64;
+  }
+
+  // 4.3 reset ship position when hit
+  hitEnemy(projectile, enemy) {
+    projectile.destroy();
+    this.resetShipPos(enemy);
+  }
   update() {
     this.moveShip(this.ship1, 1);
     this.moveShip(this.ship2, 2);
     this.moveShip(this.ship3, 3);
     this.background.tilePositionY -= 0.5;
+    this.movePlayerManager();
+
+    if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
+      this.shootBeam();
+    }
+
+    for (var i = 0; i < this.projectiles.getChildren().length; i++) {
+      var beam = this.projectiles.getChildren()[i];
+      beam.update();
+    }
+  }
+
+  shootBeam() {
+    var beam = new Beam(this);
+  }
+
+  movePlayerManager() {
+    this.player.setVelocity(0);
+
+    if (this.cursorKeys.left.isDown) {
+      this.player.setVelocityX(-gameSettings.playerSpeed);
+    } else if (this.cursorKeys.right.isDown) {
+      this.player.setVelocityX(gameSettings.playerSpeed);
+    }
+
+    if (this.cursorKeys.up.isDown) {
+      this.player.setVelocityY(-gameSettings.playerSpeed);
+    } else if (this.cursorKeys.down.isDown) {
+      this.player.setVelocityY(gameSettings.playerSpeed);
+    }
   }
 }
