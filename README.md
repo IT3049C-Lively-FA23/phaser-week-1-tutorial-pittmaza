@@ -14,12 +14,12 @@ Instructions to this assignment can be found [here](https://uc.instructure.com/c
 
 ## Self-Evaluation:
 
-how many points out of 20 do you deserve on this assignment: 20/20
+how many points out of 20 do you deserve on this assignment: 18/20
 
 ## Self-Reflection:
 
-I thought I did a great job at following along with the video, I had a few issues that popped up, but it seems to be mostly resolved.
+I thought I did a great job at following along with the video, I had a few issues that popped up, however, I tried my best to work around them. I couldn't figure out what was going on with the missles, I cross-compared code and attempted to troubleshoot.
 
 ### How long it took me to finish this?
 
-4 hours
+6 hours
