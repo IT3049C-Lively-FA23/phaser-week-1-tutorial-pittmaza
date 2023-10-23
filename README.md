@@ -6,15 +6,20 @@ Phaser Tutorial
 Instructions to this assignment can be found [here](https://uc.instructure.com/courses/1641850/assignments/20048178).
 
 ## Checklist:
-- [ ] update the assignment checks above to the correct link
-- [ ] make sure the assignment checks pass
-- [ ] fill out the self evaluation and Reflection
-- [ ] submit the repository link on Canvas
+
+- [x] update the assignment checks above to the correct link
+- [x] make sure the assignment checks pass
+- [x] fill out the self evaluation and Reflection
+- [x] submit the repository link on Canvas
 
 ## Self-Evaluation:
 
-how many points out of 20 do you deserve on this assignment:
+how many points out of 20 do you deserve on this assignment: 20/20
 
 ## Self-Reflection:
 
+I thought I did a great job at following along with the video, I had a few issues that popped up, but it seems to be mostly resolved.
+
 ### How long it took me to finish this?
+
+4 hours
